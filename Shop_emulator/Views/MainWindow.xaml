@@ -1,0 +1,211 @@
+﻿<Window x:Class="Shop_emulator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+        xmlns:local="clr-namespace:Shop_emulator"
+        mc:Ignorable="d"
+        Title="PayMaster - эмулятор системы массового обслуживания" Height="500" Width="800" MinWidth="600" MinHeight="320">
+ 
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" MinWidth="220"/>
+            <ColumnDefinition Width="3" />
+            <ColumnDefinition Width="1*" MinWidth="360"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="76"/>
+                <RowDefinition Height="76"/>
+                <RowDefinition Height="120"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <Grid  Grid.Row="0"   Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" BorderThickness="1" BorderBrush="#7e9d9d" Margin="5">
+                    <StackPanel Orientation="Horizontal" Margin="2" Height="36">
+                        <Button x:Name="StartButton"  Style="{StaticResource CommandButton}" Command="{Binding RunCommand}" Click="StartButton_Click">
+                            <Image Source="/Resources/Запуск.png" Width="36" Height="36"/>
+                        </Button>
+                        <Button x:Name="PauseButton" Style="{StaticResource CommandButton}" Click="PauseButton_Click">
+                            <Image Source="/Resources/Пауза.png" Width="36" Height="36"/>
+                        </Button>
+                        <Button x:Name="StopButton" Style="{StaticResource CommandButton}" Click="StopButton_Click">
+                            <Image Source="/Resources/Стоп.png" Width="36" Height="36"/>
+                        </Button>
+                    </StackPanel>
+                </Border>
+                <GroupBox Grid.Column="1" Header="Скорость (кол-во миллисек вместо 1 сек)"> 
+                    <DockPanel VerticalAlignment="Center" Margin="10">
+                        <TextBox Margin="5 0 0 0" Text="{Binding ElementName=slValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
+                        <Slider  Minimum="50" Maximum="2000" Value="1000" TickPlacement="BottomRight" TickFrequency="50" IsSnapToTickEnabled="True" Name="slValue" ValueChanged="slValue_ValueChanged"/>
+                    </DockPanel> 
+                    <!--<Slider Value="100" Minimum="50" Maximum="1000"  Height="30" TickPlacement="BottomRight" TickFrequency="50" />-->
+                </GroupBox>
+            </Grid> 
+            <StackPanel Grid.Row="1" Margin="5">
+                <GroupBox Header="Пребытие покупателей">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Через время от 1 до " VerticalAlignment="Center"/>
+                        <wpfTool:IntegerUpDown x:Name="MaxArriveTimeControl"  Minimum="1" Maximum="100000" Value="{Binding MaxArriveTime}" Grid.Row="0" Grid.Column="1" Width="52" />
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text=" c" VerticalAlignment="Center"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="В количестве от 0 до " VerticalAlignment="Center"/>
+                        <wpfTool:IntegerUpDown x:Name="MaxArriveCountControl" Grid.Row="1"  Minimum="0" Maximum="100000" Grid.Column="1" Width="52" Value="{Binding MaxArriveCount}"/>
+                        
+                    </Grid>
+                        
+                </GroupBox> 
+            </StackPanel>
+            <StackPanel Grid.Row="2" Margin="5">
+                <GroupBox Header="Общая статистика">
+                    <StackPanel x:Name="StatisticsPanel" >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Время работы: " VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding TimeElapsed}" VerticalAlignment="Center"/>
+                            <TextBlock Text=" с" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Обслужено покупателей: " VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding CustomersServiced}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Покупателей на кассах: " VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding CustomersInQueues}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Покупателей вне касс: " VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding NewCustomers}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Количество касс: " VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Cashiers.Count}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox> 
+            </StackPanel>
+
+            <DockPanel Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DockPanel.Dock="Top" >
+                <GroupBox Header="Лог">
+                    <Border BorderBrush="#7e9d9d" BorderThickness="1" CornerRadius="5"  >
+                        <ScrollViewer x:Name="LogBox" Margin="3"  VerticalScrollBarVisibility="Auto" >
+                            <TextBlock  x:Name="Log"  TextWrapping="Wrap"  > 
+                                <!--<Run Text="Строка &#10;"/> 
+                                <Run Text="Строка &#10;"/> --> 
+                            </TextBlock>
+                        </ScrollViewer>
+                    </Border>
+                </GroupBox>
+            </DockPanel>
+        </Grid> 
+        
+        <GridSplitter Grid.Column="1" ShowsPreview="False" Name="gridSplitter1" Background="LightGray"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="3" ResizeDirection="Columns" />
+
+        <Grid Grid.Column="2" Margin="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <ListBox Grid.Row="0" Margin="3" BorderBrush="#7e9d9d" AllowDrop="True" 
+                     x:Name="CashiersList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="2" 
+                     ScrollViewer.CanContentScroll="True" HorizontalContentAlignment="Stretch" 
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"  Style="{StaticResource CashierListBox}" 
+                     ItemsSource="{Binding Path=Cashiers, Mode=TwoWay}">
+               
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <Grid >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                                    <TextBlock Text="Людей на кассе: " FontSize="18"  VerticalAlignment="Bottom"/>
+                                    <TextBlock x:Name="PeopleInCashiers" Text="{Binding CustomersInQueue, UpdateSourceTrigger = PropertyChanged}"  FontSize="18"  VerticalAlignment="Bottom" /> <!--Text="{Binding Path}"-->
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Grid.Column="1" >
+                                    <TextBlock FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="Касса "/>
+                                    <TextBlock FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="{Binding Name}"/>
+                                    <Button x:Name="DeleteButton" Style="{StaticResource DeleteButton}" Click="DeleteButton_Click" Margin="2 3 0 0">
+                                        <Image Source="/Resources/Удалить.png" Width="14" Height="14"/>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Время ожидания от "/>
+                                    <wpfTool:IntegerUpDown x:Name="MinServiceTimeControl" Minimum="1" Maximum="100000" ValueChanged="MinServiceTimeControl_ValueChanged" Value="{Binding MinServiceTime}" Width="50"/>
+                                    <TextBlock Text=" до "/>
+                                    <wpfTool:IntegerUpDown x:Name="MaxServiceTimeControl" Minimum="1" Maximum="100000" ValueChanged="MaxServiceTimeControl_ValueChanged" Value="{Binding MaxServiceTime}" Width="50"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Среднее время обслуживания: " VerticalAlignment="Center"/>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding AvgServiceTime}"/>
+                                    <TextBlock Text=" с" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Ожидаемое среднее время обслуживания: " VerticalAlignment="Center"/>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding EstimatedServiceTime}"/>
+                                    <TextBlock Text=" с" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Ожидаемая продолжительность очереди: " VerticalAlignment="Center"/>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding EstimatedQueueServiceTime}"/>
+                                    <TextBlock Text=" с" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel> 
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <!--<ListBox.ItemContainerStyle> 
+                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource CashierListBoxItem}">
+                        <Setter Property="AllowDrop" Value="True" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMostFree" Value="true">
+                                <Setter Property="Foreground" Value="Black" />
+                            </Trigger>
+                        </Style.Triggers>
+                        --><!--<Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="{Binding IsMostFree}" Value="False">
+                                            <Setter Property="Fore" Value="Green"/> 
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>--><!--
+                    </Style>
+                </ListBox.ItemContainerStyle>-->
+            </ListBox>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="AddCashier" Click="AddCashier_Click" Content="Добавить кассу" Width="110" Height="24" Style="{StaticResource FunctionButton}"/>
+                <Button x:Name="DeleteAllCashiers" Click="DeleteAllCashiers_Click" Content="Удалить все кассы" Width="110" Height="24" Style="{StaticResource FunctionButton}"/>
+
+            </StackPanel>
+           
+        </Grid>
+        
+
+    </Grid>
+</Window>
