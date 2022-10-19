@@ -71,9 +71,7 @@ namespace Shop_emulator.Models
 				}
 			}
 		}
-
-		
-
+		 
 
 		public SolidColorBrush Background
 		{
@@ -155,30 +153,29 @@ namespace Shop_emulator.Models
 					OnPropertyChanged();
 				}
 			}
-		}
-		 
-		
-
+		}  
 
 		// Обслуживание текущего покупателя, может продолжаться или окончиться с уменьшением queueLength на 1
-		public void ServiceCustomer()
+		// Возвращает true, если был обслужен покупатель
+		public bool ServiceCustomer()
 		{
-			if (customersServiced == 0) AvgServiceTime = 0;
-			else AvgServiceTime = Math.Round((double)(shop.TimeElapsed - creationTime) / customersServiced, 2);
+			if (CustomersServiced == 0) AvgServiceTime = 0;
+			else AvgServiceTime = Math.Round((double)(shop.TimeElapsed - creationTime) / CustomersServiced, 2);
 
-
-			if (customersInQueue > 0)
+			bool serviced = false;
+			if (CustomersInQueue > 0)
 			{ 
 				
 				if (shop.TimeElapsed == timeNextService)
 				{
-					customersInQueue--;
-					customersServiced++;
+					serviced = true;
+					CustomersInQueue--;
+					CustomersServiced++;
 
 					shop.CustomersInQueues--;
 					shop.CustomersServiced++;
 
-					if (customersInQueue == 0)
+					if (CustomersInQueue == 0)
 						timeNextService = -1;
 					else
 						timeNextService = shop.TimeElapsed + shop.rnd.Next(minServiceTime, maxServiceTime + 1);
@@ -190,6 +187,8 @@ namespace Shop_emulator.Models
 				}
 				EstimatedQueueServiceTime = EstimatedServiceTime * CustomersInQueue;	
 			}
+
+			return serviced;
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

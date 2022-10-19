@@ -152,29 +152,36 @@ namespace Shop_emulator.Models
 
 				foreach (Cashier cashier in Cashiers)
 				{
-					if (cashier.CustomersInQueue == maxValue)
-						cashier.Background = new SolidColorBrush(Color.FromRgb(11,218,81));
-					else if (cashier.CustomersInQueue == minValue)
-					{
+					if (maxValue == minValue)
+						cashier.Background = new SolidColorBrush(Color.FromRgb(211, 235, 255));
+					else if (cashier.CustomersInQueue == maxValue)
 						cashier.Background = new SolidColorBrush(Color.FromRgb(255, 138, 102));
-					}
+					else if (cashier.CustomersInQueue == minValue)
+						cashier.Background = new SolidColorBrush(Color.FromRgb(11,218,81));
 					else cashier.Background = new SolidColorBrush(Color.FromRgb(211, 235, 255));
 				}
 			} 
 		}
 
 
-		// Эмуляция 1 секунды работы магазина
-		public void ShopTick()
+		// Эмуляция 1 секунды работы магазина, возвращает логи
+		public List<string> ShopTick()
 		{
-			SetBackgroundForCashiers();
+			var logs = new List<string>();
 			TimeElapsed++; 
 			CustomersArrive();
-			if (newCustomers > 0 && cashiers.Count > 0)
-				DistributeNewCustomers();
+			if (newCustomers > 0 && cashiers.Count > 0) {
+				int[] distribution = DistributeNewCustomers();
+				for (int i = 0; i < cashiers.Count; ++i)
+					if (distribution[i] > 0)
+						logs.Add($"Касса {cashiers[i].Name} - пришло клиентов: {distribution[i]}, в очереди: {cashiers[i].CustomersInQueue}");
+			}
 			foreach (Cashier c in cashiers)
-				c.ServiceCustomer(); 
+				if (c.ServiceCustomer())
+					logs.Add($"Касса {c.Name} - обслужен клиент, в очереди: {c.CustomersInQueue}");
 
+			SetBackgroundForCashiers();
+			return logs;
 		}
 
 		// Генерация новых покупателей
@@ -190,9 +197,12 @@ namespace Shop_emulator.Models
 		}
 
 		// Распределение новых покупателей по кассам
-		public void DistributeNewCustomers()
+		public int[] DistributeNewCustomers()
 		{
-			for (; newCustomers > 0; newCustomers--)
+			int[] distribution = new int[cashiers.Count];
+			for (int i = 0; i < cashiers.Count; ++i)
+				distribution[i] = 0;
+			for (; NewCustomers > 0; NewCustomers--)
 			{
 				int minQueue = cashiers[0].CustomersInQueue;
 				int minQueueIndex = 0;
@@ -204,8 +214,9 @@ namespace Shop_emulator.Models
 					}
 				cashiers[minQueueIndex].CustomersInQueue++; 
 				CustomersInQueues++;
-				 
+				distribution[minQueueIndex]++;
 			}
+			return distribution;
 		}
 
 		// Добавить кассира с именем в поле name
@@ -242,17 +253,15 @@ namespace Shop_emulator.Models
 		// Удалить кассира по его номеру в списке, его очередь отправляется на распределение по другим кассам
 		public void RemoveCashier(int i)
 		{
-			newCustomers += cashiers[i].CustomersInQueue;
+			CustomersInQueues -= cashiers[i].CustomersInQueue;
+			NewCustomers += cashiers[i].CustomersInQueue;
 			cashiers.RemoveAt(i);
 		}
 
 		// Удалить кассира по его полю name, его очередь отправляется на распределение по другим кассам
-		public void RemoveCashier(string name)
+		public void RemoveCashier(Cashier cashier)
 		{
-			int i = 0;
-			for (; i < cashiers.Count; ++i)
-				if (cashiers[i].Name == name)
-					break;
+			int i = Cashiers.IndexOf(cashier);
 			RemoveCashier(i);
 		}
 	}

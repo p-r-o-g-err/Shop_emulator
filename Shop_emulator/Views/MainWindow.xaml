@@ -6,11 +6,11 @@
         xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         xmlns:local="clr-namespace:Shop_emulator"
         mc:Ignorable="d"
-        Title="PayMaster - эмулятор системы массового обслуживания" Height="500" Width="800" MinWidth="600" MinHeight="320">
+        Title="PayMaster - эмулятор системы массового обслуживания" Height="500" Width="800" MinWidth="710" MinHeight="370">
  
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" MinWidth="220"/>
+            <ColumnDefinition Width="1*" MinWidth="334"/>
             <ColumnDefinition Width="3" />
             <ColumnDefinition Width="1*" MinWidth="360"/>
         </Grid.ColumnDefinitions>
@@ -50,7 +50,7 @@
                 </GroupBox>
             </Grid> 
             <StackPanel Grid.Row="1" Margin="5">
-                <GroupBox Header="Пребытие покупателей">
+                <GroupBox Header="Прибытие покупателей">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -77,9 +77,9 @@
                 <GroupBox Header="Общая статистика">
                     <StackPanel x:Name="StatisticsPanel" >
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Время работы: " VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding TimeElapsed}" VerticalAlignment="Center"/>
-                            <TextBlock Text=" с" VerticalAlignment="Center"/>
+                            <TextBlock Text="Длительность симуляции: " VerticalAlignment="Center" FontSize="18"/>
+                            <TextBlock Text="{Binding TimeElapsed}" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+                            <TextBlock Text=" с" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Обслужено покупателей: " VerticalAlignment="Center"/>
@@ -157,13 +157,13 @@
                                     <wpfTool:IntegerUpDown x:Name="MaxServiceTimeControl" Minimum="1" Maximum="100000" ValueChanged="MaxServiceTimeControl_ValueChanged" Value="{Binding MaxServiceTime}" Width="50"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Среднее время обслуживания: " VerticalAlignment="Center"/>
-                                    <TextBlock VerticalAlignment="Center" Text="{Binding AvgServiceTime}"/>
+                                    <TextBlock Text="Ожидаемое среднее время обслуживания: " VerticalAlignment="Center"/>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding EstimatedServiceTime}"/>
                                     <TextBlock Text=" с" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Ожидаемое среднее время обслуживания: " VerticalAlignment="Center"/>
-                                    <TextBlock VerticalAlignment="Center" Text="{Binding EstimatedServiceTime}"/>
+                                    <TextBlock Text="Фактическое среднее время обслуживания: " VerticalAlignment="Center"/>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding AvgServiceTime}"/>
                                     <TextBlock Text=" с" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">

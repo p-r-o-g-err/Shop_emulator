@@ -46,7 +46,7 @@ namespace Shop_emulator
 
 			ObservableCollection<Cashier> cashiers = new ObservableCollection<Cashier>()
 			{
-				new Cashier(shop) {
+					new Cashier(shop) {
 						Name = "1",
 						MinServiceTime = 2,
 						MaxServiceTime = 4,
@@ -69,8 +69,7 @@ namespace Shop_emulator
 			} 
 
 			shop.Cashiers = cashiers;
-
-
+			 
 			this.DataContext = shop;
 			CashiersList.ItemsSource = shop.Cashiers;
 			PauseButton.IsEnabled = false;
@@ -80,15 +79,15 @@ namespace Shop_emulator
 
 		private void OnTimedEvent(object sender, EventArgs e)
 		{ 
-			shop.ShopTick();
+			List<string> logs = shop.ShopTick();
 
-			Log.Inlines.Add(new Run($"Время: {shop.TimeElapsed} с\n") { FontWeight = FontWeights.Bold });
-			Log.Inlines.Add(new Run($" . Следующее пребытие покупателей в {shop.timeNextCustomers} с\n") { FontWeight = FontWeights.Normal });
-			foreach (Cashier c in shop.Cashiers) 
-				Log.Inlines.Add(new Run($" . . . Касса {c.Name}: длина очереди - {c.CustomersInQueue}, следующий покупатель в {c.timeNextService} с\n") { FontWeight = FontWeights.Normal });
+			foreach (string log in logs) {
+				Log.Inlines.Add(new Run($"{shop.TimeElapsed, 3} с: ") { FontWeight = FontWeights.Bold });
+				Log.Inlines.Add(new Run($"{log}\n") { FontWeight = FontWeights.Normal });
+			}
 			LogBox.ScrollToEnd();
 		}
-		 
+		
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
@@ -113,6 +112,8 @@ namespace Shop_emulator
         { 
 			shop.AddCashier(minServiceTime: 3, maxServiceTime: 5);
 			CashiersList.ItemsSource = shop.Cashiers;
+			Log.Inlines.Add(new Run($"{shop.TimeElapsed, 3} с: ") { FontWeight = FontWeights.Bold });
+			Log.Inlines.Add(new Run($"Добавлен кассир {shop.Cashiers.Last().Name}\n") { FontWeight = FontWeights.Normal });
 		}
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -138,9 +139,7 @@ namespace Shop_emulator
 				cashier.EstimatedQueueServiceTime = 0;
 				cashier.Background = new SolidColorBrush(Color.FromRgb(211, 235, 255)); 
 				cashier.EstimatedServiceTime = Math.Round((double)(cashier.MinServiceTime + cashier.MaxServiceTime) / 2, 2); 
-			}
-
-			
+			} 
 		}																																																																						
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -149,13 +148,11 @@ namespace Shop_emulator
 			if (cmd.DataContext is Cashier)
 			{
 				Cashier cashier = (Cashier)cmd.DataContext;
-				shop.Cashiers.Remove(cashier);  
-				if (shop.Cashiers.Count == 0)
-                {
-					shop.NewCustomers += shop.CustomersInQueues;
-					shop.CustomersInQueues = 0;
-				}
-			} 
+				string name = cashier.Name;
+				shop.RemoveCashier(cashier);  
+				Log.Inlines.Add(new Run($"{shop.TimeElapsed, 3} с: ") { FontWeight = FontWeights.Bold });
+				Log.Inlines.Add(new Run($"Удалён кассир {name}\n") { FontWeight = FontWeights.Normal });
+			}
 		}
 
         private void DeleteAllCashiers_Click(object sender, RoutedEventArgs e)
@@ -169,8 +166,10 @@ namespace Shop_emulator
             {
 				shop.Cashiers.Clear();
 				shop.NewCustomers += shop.CustomersInQueues;
-				shop.CustomersInQueues = 0; 
-			} 
+				shop.CustomersInQueues = 0;
+				Log.Inlines.Add(new Run($"{shop.TimeElapsed, 3} с: ") { FontWeight = FontWeights.Bold });
+				Log.Inlines.Add(new Run($"Удалены все кассиры\n") { FontWeight = FontWeights.Normal });
+			}
 		}
 
         private void MinServiceTimeControl_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
