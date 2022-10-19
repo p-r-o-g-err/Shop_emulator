@@ -5,8 +5,7 @@
              StartupUri="Views\MainWindow.xaml">
     <Application.Resources>
         <Style TargetType="Button" x:Key="DeleteButton">
-            <Setter Property="Background" Value="#ff8597"/>
-            <!--<Setter Property="Background" Value="#ffffff"/>--> 
+            <Setter Property="Background" Value="#ff8597"/> 
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -79,10 +78,8 @@
             </Setter>
         </Style>
 
-        <Style TargetType="{x:Type ListBoxItem}" x:Key="CashierListBoxItem">
-            <!--<Setter Property="Background" Value="#D3EBFF"/>-->
-            <Setter Property="Background" Value="{Binding Background}"/>
-            <!--#89e2fa-->
+        <Style TargetType="{x:Type ListBoxItem}" x:Key="CashierListBoxItem"> 
+            <Setter Property="Background" Value="{Binding Background}"/> 
             <Setter Property="Margin" Value="2"/> 
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Black"/>
@@ -104,25 +101,7 @@
                                 <Setter Property="Background" TargetName="Bd" Value="lightgray"/>
                                 <Setter Property="Foreground" Value="Gray"/>
                                 <Setter Property="BorderBrush" Value="Gray"/>
-                            </Trigger> 
-                            <!--<MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="Selector.IsSelectionActive"
-                                            Value="False" />
-                                    <Condition Property="IsSelected"
-                                            Value="True" />
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Background"
-                                    TargetName="Bd"
-                                    Value="#FF27C7F7" />
-                            </MultiTrigger>-->
-                            <!--<MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="Selector.IsSelectionActive" Value="True" />
-                                    <Condition Property="IsSelected" Value="True" />
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="#FF27C7F7" />
-                            </MultiTrigger>--> 
+                            </Trigger>  
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
                                     <Condition Property="IsMouseOver" Value="True"/>
